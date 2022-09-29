@@ -36,7 +36,7 @@ namespace Pretpark
 
                 string content = System.IO.File.ReadAllText("html.html");
 
-                connectie.Send(System.Text.Encoding.ASCII.GetBytes($"HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
+                connectie.Send(System.Text.Encoding.ASCII.GetBytes($"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
             }
 
         }
