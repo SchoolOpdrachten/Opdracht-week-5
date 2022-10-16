@@ -11,11 +11,10 @@ internal class Program
     
     private static void Main(string[] args)
     {
+        var teller = 0;
+        
         var server = new TcpListener(new IPAddress(new byte[] { 127, 0, 0, 1 }), 5000);
         server.Start();
-        
-        var teller = 0;
-
         while (true)
         {
             using var connectie = server.AcceptSocket();
@@ -23,15 +22,15 @@ internal class Program
             using var requestLezer = new StreamReader(request);
 
             var regel1 = requestLezer.ReadLine()?.Split(" ");
-            if (regel1 == null) continue;
+            if (regel1 == null) return;
 
             (var methode, var url, var httpversie) = (regel1[0], regel1[1], regel1[2]);
             var regel = requestLezer.ReadLine();
             var contentLength = 0;
             while (!string.IsNullOrEmpty(regel) && !requestLezer.EndOfStream)
             {
-                var regelstukje = regel.Split(":");
-                var (header, waarde) = (regelstukje[0], regelstukje[1]);
+                var stukjes = regel.Split(":");
+                var (header, waarde) = (stukjes[0], stukjes[1]);
                 if (header.ToLower() == "content-length")
                     contentLength = int.Parse(waarde);
                 regel = requestLezer.ReadLine(); 
