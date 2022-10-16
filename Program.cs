@@ -52,7 +52,14 @@ internal class Program
                 requestLezer.Read(bytes, 0, contentLength);
             }
 
-            if (url == "/contact")
+            if (url == "" || url == "/")
+            {
+                Console.WriteLine(httpversie);
+                var content = File.ReadAllText("home.html") + userAgent;
+                connectie.Send(Encoding.ASCII.GetBytes(
+                    $"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
+            }
+            else if (url == "/contact")
             {
                 var content = File.ReadAllText("contact.html");
                 connectie.Send(Encoding.ASCII.GetBytes(
@@ -62,19 +69,6 @@ internal class Program
             {
                 teller++;
                 var content = "Teller: " + teller;
-                connectie.Send(Encoding.ASCII.GetBytes(
-                    $"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
-            }
-            else if (url.Contains("/mijnteller"))
-            {
-                var myUri = new Uri("http://localhost:5000" + url);
-                var t = 0;
-                if (url.Contains("?t="))
-                {
-                    t = int.Parse(HttpUtility.ParseQueryString(myUri.Query).Get("t"));
-                }
-
-                var content = "De teller staat op " + t + ", klik <a href='mijnteller?t=" + (t+1) + "'>hier</a> om te verhogen";
                 connectie.Send(Encoding.ASCII.GetBytes(
                     $"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
             }
@@ -88,18 +82,24 @@ internal class Program
                 connectie.Send(Encoding.ASCII.GetBytes(
                     $"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
             }
-            else if (url == "/" || url == "")
+            else if (url.Contains("/mijnteller"))
             {
-                Console.WriteLine(httpversie);
-                var content = File.ReadAllText("index.html") + userAgent;
+                var myUri = new Uri("http://localhost:5000" + url);
+                var mijnTeller = 0;
+                if (url.Contains("?t="))
+                {
+                    mijnTeller = int.Parse(HttpUtility.ParseQueryString(myUri.Query).Get("t"));
+                }
+
+                var content = $"De teller staat op {mijnTeller}, klik <a href='localhost:5000/mijnteller?t={mijnTeller+1}'>hier</a> om te verhogen";
                 connectie.Send(Encoding.ASCII.GetBytes(
                     $"HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
             }
             else
             {
-                var content = "<h1>404 Not Found</h1><p>Pagina niet gevonden</p>";
+                var content = "<h1>404 Not Found</h1><p>Pagina niet gevonden of bestaat niet. Helaas ;)</p>";
                 connectie.Send(Encoding.ASCII.GetBytes(
-                    $"HTTP/1.0 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: 49\r\n\r\n{content}"));
+                    $"HTTP/1.0 404 Not Found\r\nContent-Type: text/html\r\nContent-Length: {content.Length}\r\n\r\n{content}"));
             }
         }
     }
